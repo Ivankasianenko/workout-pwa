@@ -1,1 +1,58 @@
-# workout-pwa
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Workout Tracker</title>
+
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Trainer" />
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div>
+        <h1>Workout Tracker</h1>
+        <p>Верх / Низ</p>
+      </div>
+      <button id="clearHistoryBtn" class="small-btn">Очистить</button>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2>Сегодня</h2>
+
+        <div class="tabs">
+          <button class="tab active" data-day="upper">Верх</button>
+          <button class="tab" data-day="lower">Низ</button>
+        </div>
+
+        <div id="exerciseList" class="exercise-list"></div>
+      </section>
+
+      <section class="card">
+        <h2>Таймер отдыха</h2>
+        <div class="timer" id="timerDisplay">01:30</div>
+        <div class="timer-buttons">
+          <button onclick="startTimer(90)">90 сек</button>
+          <button onclick="startTimer(120)">120 сек</button>
+          <button onclick="stopTimer()">Стоп</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>История</h2>
+        <div id="historyList" class="history-list"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
