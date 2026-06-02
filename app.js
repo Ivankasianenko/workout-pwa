@@ -1,51 +1,47 @@
-
-const workouts = {
+const programs = {
   upper: [
-    "Жим лёжа",
-    "Тяга верхнего блока",
-    "Жим гантелей сидя",
-    "Тяга гантели",
-    "Бицепс",
-    "Трицепс"
+    { name: "Жим", sets: [[95, 7], [95, 7], [90, 10]] },
+    { name: "Тяга блока узкая рукоятка", sets: [[75, 9], [75, 9], [70, 12]] },
+    { name: "Бабочка", sets: [[85, 9], [85, 9], [80, 12]] },
+    { name: "Тяга горизонтальная", sets: [[90, 9], [90, 9], [85, 12]] },
+    { name: "Бицепс в блоке", sets: [[77.5, 9], [77.5, 9], [77.5, 9], [72.5, 12]] },
+    { name: "Трицепс", sets: [[95, 9], [95, 9], [95, 9], [90, 12]] },
+    { name: "Плечи махи гантелями", sets: [[16, 11], [16, 11], [16, 11], [14, 15]] }
   ],
   lower: [
-    "Присед",
-    "Жим ногами",
-    "Румынская тяга",
-    "Выпады",
-    "Икры",
-    "Пресс"
+    { name: "Присед", sets: [[80, 8], [80, 8], [75, 10]] },
+    { name: "Разгибание ног", sets: [[75, 11], [75, 11], [75, 11], [70, 15]] },
+    { name: "Сгибание ног", sets: [[75, 11], [75, 11], [75, 11], [75, 11], [70, 15]] },
+    { name: "Икры", sets: [[140, 16], [140, 16], [140, 16], [130, 20]] },
+    { name: "Сведения", sets: [[75, 11], [75, 11], [75, 11], [70, 15]] }
   ]
 };
 
 let currentDay = "upper";
 let timerInterval = null;
-let timeLeft = 90;
+let timerSeconds = 90;
 
 const exerciseList = document.getElementById("exerciseList");
 const historyList = document.getElementById("historyList");
 const timerDisplay = document.getElementById("timerDisplay");
+const clearHistoryBtn = document.getElementById("clearHistoryBtn");
 
 function renderExercises() {
   exerciseList.innerHTML = "";
 
-  workouts[currentDay].forEach((name, index) => {
-    const id = `${currentDay}-${index}`;
-
+  programs[currentDay].forEach((exercise) => {
     const div = document.createElement("div");
     div.className = "exercise";
 
+    const setsHtml = exercise.sets
+      .map(([weight, reps]) => `<li>${weight} кг × ${reps}</li>`)
+      .join("");
+
     div.innerHTML = `
-      <div class="exercise-title">${name}</div>
-
-      <div class="inputs">
-        <input id="weight-${id}" type="number" placeholder="Вес" />
-        <input id="reps-${id}" type="number" placeholder="Повт." />
-        <input id="sets-${id}" type="number" placeholder="Подх." />
-      </div>
-
-      <button class="save-btn" onclick="saveExercise('${name}', '${id}')">
-        Сохранить
+      <h3>${exercise.name}</h3>
+      <ul>${setsHtml}</ul>
+      <button onclick="saveExercise('${exercise.name.replaceAll("'", "\\'")}')">
+        Выполнено
       </button>
     `;
 
@@ -53,33 +49,16 @@ function renderExercises() {
   });
 }
 
-function saveExercise(name, id) {
-  const weight = document.getElementById(`weight-${id}`).value;
-  const reps = document.getElementById(`reps-${id}`).value;
-  const sets = document.getElementById(`sets-${id}`).value;
-
-  if (!weight && !reps && !sets) {
-    alert("Введи вес, повторы или подходы");
-    return;
-  }
-
+function saveExercise(name) {
   const history = getHistory();
 
   history.unshift({
     date: new Date().toLocaleString("ru-RU"),
     day: currentDay === "upper" ? "Верх" : "Низ",
-    name,
-    weight: weight || "-",
-    reps: reps || "-",
-    sets: sets || "-"
+    exercise: name
   });
 
   localStorage.setItem("workoutHistory", JSON.stringify(history));
-
-  document.getElementById(`weight-${id}`).value = "";
-  document.getElementById(`reps-${id}`).value = "";
-  document.getElementById(`sets-${id}`).value = "";
-
   renderHistory();
 }
 
@@ -90,30 +69,44 @@ function getHistory() {
 function renderHistory() {
   const history = getHistory();
 
+  historyList.innerHTML = "";
+
   if (history.length === 0) {
-    historyList.innerHTML = `<div class="empty">История пока пустая</div>`;
+    historyList.innerHTML = `<p class="empty">Истории пока нет</p>`;
     return;
   }
 
-  historyList.innerHTML = history.map(item => `
-    <div class="history-item">
-      <strong>${item.name}</strong><br>
-      ${item.day} · ${item.date}<br>
-      Вес: ${item.weight} кг · Повторы: ${item.reps} · Подходы: ${item.sets}
-    </div>
-  `).join("");
+  history.forEach((item) => {
+    const div = document.createElement("div");
+    div.className = "history-item";
+
+    div.innerHTML = `
+      <strong>${item.day}</strong>
+      <p>${item.exercise}</p>
+      <small>${item.date}</small>
+    `;
+
+    historyList.appendChild(div);
+  });
+}
+
+function clearHistory() {
+  localStorage.removeItem("workoutHistory");
+  renderHistory();
 }
 
 function startTimer(seconds) {
   stopTimer();
-  timeLeft = seconds;
+
+  timerSeconds = seconds;
   updateTimerDisplay();
 
   timerInterval = setInterval(() => {
-    timeLeft--;
+    timerSeconds--;
+
     updateTimerDisplay();
 
-    if (timeLeft <= 0) {
+    if (timerSeconds <= 0) {
       stopTimer();
       alert("Отдых закончен");
     }
@@ -128,33 +121,28 @@ function stopTimer() {
 }
 
 function updateTimerDisplay() {
-  const minutes = Math.floor(timeLeft / 60);
-  const seconds = timeLeft % 60;
+  const minutes = Math.floor(timerSeconds / 60);
+  const seconds = timerSeconds % 60;
 
   timerDisplay.textContent =
-    `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    String(minutes).padStart(2, "0") +
+    ":" +
+    String(seconds).padStart(2, "0");
 }
 
-document.querySelectorAll(".tab").forEach(button => {
-  button.addEventListener("click", () => {
-    document.querySelectorAll(".tab").forEach(btn => btn.classList.remove("active"));
-    button.classList.add("active");
+document.querySelectorAll(".tab").forEach((tab) => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach((btn) => {
+      btn.classList.remove("active");
+    });
 
-    currentDay = button.dataset.day;
+    tab.classList.add("active");
+    currentDay = tab.dataset.day;
     renderExercises();
   });
 });
 
-document.getElementById("clearHistoryBtn").addEventListener("click", () => {
-  if (confirm("Очистить всю историю тренировок?")) {
-    localStorage.removeItem("workoutHistory");
-    renderHistory();
-  }
-});
-
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("service-worker.js");
-}
+clearHistoryBtn.addEventListener("click", clearHistory);
 
 renderExercises();
 renderHistory();
