@@ -2,55 +2,113 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
   <title>Workout Tracker</title>
 
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="style.css" />
 
-  <meta name="theme-color" content="#0f172a" />
+  <meta name="theme-color" content="#000000" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Trainer" />
+  <meta name="apple-mobile-web-app-title" content="Тренировки" />
 </head>
+
 <body>
   <div class="app">
-    <header class="header">
-      <div>
-        <h1>Workout Tracker</h1>
-        <p>Верх / Низ</p>
+
+    <main id="screen-today" class="screen active">
+      <div class="today-layout">
+        <div class="date" id="todayDate">1 June 2026</div>
+
+        <div class="mascot-wrap">
+          <img src="trainer.png" alt="Trainer" class="mascot" />
+        </div>
+
+        <section class="start-panel">
+          <h1>Выбери тренировку</h1>
+
+          <div class="choice-row">
+            <button class="choice active" data-workout="upper">Верх</button>
+            <button class="choice" data-workout="lower">Низ</button>
+          </div>
+
+          <button id="startWorkoutBtn" class="primary-btn">
+            Начать тренировку
+          </button>
+        </section>
       </div>
-      <button id="clearHistoryBtn" class="small-btn">Очистить</button>
-    </header>
-
-    <main>
-      <section class="card">
-        <h2>Сегодня</h2>
-
-        <div class="tabs">
-          <button class="tab active" data-day="upper">Верх</button>
-          <button class="tab" data-day="lower">Низ</button>
-        </div>
-
-        <div id="exerciseList" class="exercise-list"></div>
-      </section>
-
-      <section class="card">
-        <h2>Таймер отдыха</h2>
-        <div class="timer" id="timerDisplay">01:30</div>
-        <div class="timer-buttons">
-          <button onclick="startTimer(90)">90 сек</button>
-          <button onclick="startTimer(120)">120 сек</button>
-          <button onclick="stopTimer()">Стоп</button>
-        </div>
-      </section>
-
-      <section class="card">
-        <h2>История</h2>
-        <div id="historyList" class="history-list"></div>
-      </section>
     </main>
+
+    <main id="screen-plan" class="screen">
+      <header class="page-header">
+        <h1>План</h1>
+      </header>
+
+      <div class="segmented">
+        <button class="plan-tab active" data-workout="upper">Верх</button>
+        <button class="plan-tab" data-workout="lower">Низ</button>
+      </div>
+
+      <div id="planList" class="list"></div>
+    </main>
+
+    <main id="screen-history" class="screen">
+      <header class="page-header">
+        <h1>История</h1>
+      </header>
+
+      <div id="historyList" class="list"></div>
+    </main>
+
+    <main id="screen-calendar" class="screen">
+      <header class="page-header calendar-header">
+        <h1>Календарь</h1>
+        <button id="scheduleBtn" class="link-btn">Расписание</button>
+      </header>
+
+      <div class="month-nav">
+        <button id="prevMonthBtn">‹</button>
+        <h2 id="monthTitle">Июнь 2026</h2>
+        <button id="nextMonthBtn">›</button>
+      </div>
+
+      <div class="weekdays">
+        <span>Пн</span>
+        <span>Вт</span>
+        <span>Ср</span>
+        <span>Чт</span>
+        <span>Пт</span>
+        <span>Сб</span>
+        <span>Вс</span>
+      </div>
+
+      <div id="calendarGrid" class="calendar-grid"></div>
+    </main>
+
+    <nav class="tabbar">
+      <button class="nav-btn active" data-screen="today">
+        <span>🔥</span>
+        <small>Сегодня</small>
+      </button>
+
+      <button class="nav-btn" data-screen="plan">
+        <span>☷</span>
+        <small>План</small>
+      </button>
+
+      <button class="nav-btn" data-screen="history">
+        <span>◷</span>
+        <small>История</small>
+      </button>
+
+      <button class="nav-btn" data-screen="calendar">
+        <span>▦</span>
+        <small>Календарь</small>
+      </button>
+    </nav>
+
   </div>
 
   <script src="app.js"></script>
