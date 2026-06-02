@@ -18,92 +18,99 @@
 <body>
   <div class="app">
 
-    <main id="screen-today" class="screen active">
-      <div class="today-layout">
-        <div class="date" id="todayDate">1 June 2026</div>
+    <section id="todayScreen" class="screen active">
+      <div class="today-date" id="todayDate"></div>
 
-        <div class="mascot-wrap">
-          <img src="trainer.png" alt="Trainer" class="mascot" />
+      <div class="hero">
+        <img src="trainer.png" class="trainer" alt="trainer" />
+      </div>
+
+      <div class="start-block">
+        <h1>Выбери тренировку</h1>
+
+        <div class="choice-row">
+          <button id="chooseUpper" class="choice active">Верх</button>
+          <button id="chooseLower" class="choice">Низ</button>
         </div>
 
-        <section class="start-panel">
-          <h1>Выбери тренировку</h1>
-
-          <div class="choice-row">
-            <button class="choice active" data-workout="upper">Верх</button>
-            <button class="choice" data-workout="lower">Низ</button>
-          </div>
-
-          <button id="startWorkoutBtn" class="primary-btn">
-            Начать тренировку
-          </button>
-        </section>
+        <button id="startWorkoutBtn" class="start-btn">Начать тренировку</button>
       </div>
-    </main>
+    </section>
 
-    <main id="screen-plan" class="screen">
-      <header class="page-header">
-        <h1>План</h1>
-      </header>
+    <section id="workoutScreen" class="screen">
+      <div class="top-row">
+        <button id="cancelWorkoutBtn" class="text-btn">Отмена</button>
+        <div id="workoutCounter"></div>
+      </div>
+
+      <div id="workoutExercise" class="workout-card"></div>
+    </section>
+
+    <section id="planScreen" class="screen">
+      <h1 class="page-title">План</h1>
 
       <div class="segmented">
-        <button class="plan-tab active" data-workout="upper">Верх</button>
-        <button class="plan-tab" data-workout="lower">Низ</button>
+        <button class="plan-tab active" data-type="upper">Верх</button>
+        <button class="plan-tab" data-type="lower">Низ</button>
       </div>
 
-      <div id="planList" class="list"></div>
-    </main>
+      <div id="planList" class="plan-list"></div>
+    </section>
 
-    <main id="screen-history" class="screen">
-      <header class="page-header">
-        <h1>История</h1>
-      </header>
+    <section id="historyScreen" class="screen">
+      <h1 class="page-title">История</h1>
+      <div id="historyList" class="history-list"></div>
+    </section>
 
-      <div id="historyList" class="list"></div>
-    </main>
+    <section id="calendarScreen" class="screen">
+      <div class="calendar-top">
+        <h1 class="page-title">Календарь</h1>
+        <button id="openScheduleBtn" class="text-btn">Расписание</button>
+      </div>
 
-    <main id="screen-calendar" class="screen">
-      <header class="page-header calendar-header">
-        <h1>Календарь</h1>
-        <button id="scheduleBtn" class="link-btn">Расписание</button>
-      </header>
-
-      <div class="month-nav">
-        <button id="prevMonthBtn">‹</button>
-        <h2 id="monthTitle">Июнь 2026</h2>
-        <button id="nextMonthBtn">›</button>
+      <div class="month-row">
+        <button id="prevMonthBtn" class="arrow-btn">‹</button>
+        <h2 id="monthTitle"></h2>
+        <button id="nextMonthBtn" class="arrow-btn">›</button>
       </div>
 
       <div class="weekdays">
-        <span>Пн</span>
-        <span>Вт</span>
-        <span>Ср</span>
-        <span>Чт</span>
-        <span>Пт</span>
-        <span>Сб</span>
-        <span>Вс</span>
+        <span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span>
       </div>
 
       <div id="calendarGrid" class="calendar-grid"></div>
-    </main>
+    </section>
+
+    <section id="dayDetailScreen" class="screen">
+      <button id="backToCalendarBtn" class="text-btn">← Назад</button>
+      <h1 id="dayDetailTitle" class="page-title"></h1>
+      <div id="dayDetailContent"></div>
+    </section>
+
+    <section id="scheduleScreen" class="screen">
+      <div class="calendar-top">
+        <h1 class="page-title">Расписание</h1>
+        <button id="closeScheduleBtn" class="text-btn">Готово</button>
+      </div>
+
+      <div id="scheduleList" class="schedule-list"></div>
+      <button id="addScheduleBtn" class="add-btn">＋ Добавить день</button>
+    </section>
 
     <nav class="tabbar">
-      <button class="nav-btn active" data-screen="today">
+      <button class="nav-btn active" data-screen="todayScreen">
         <span>🔥</span>
         <small>Сегодня</small>
       </button>
-
-      <button class="nav-btn" data-screen="plan">
+      <button class="nav-btn" data-screen="planScreen">
         <span>☷</span>
         <small>План</small>
       </button>
-
-      <button class="nav-btn" data-screen="history">
+      <button class="nav-btn" data-screen="historyScreen">
         <span>◷</span>
         <small>История</small>
       </button>
-
-      <button class="nav-btn" data-screen="calendar">
+      <button class="nav-btn" data-screen="calendarScreen">
         <span>▦</span>
         <small>Календарь</small>
       </button>
@@ -112,10 +119,11 @@
   </div>
 
   <script src="app.js"></script>
+
   <script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("./service-worker.js");
-  }
-</script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./service-worker.js");
+    }
+  </script>
 </body>
 </html>
