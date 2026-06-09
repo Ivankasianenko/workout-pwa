@@ -187,16 +187,22 @@ function openDayDetail(date) {
 
   if (done) {
     box.innerHTML = `
-      <div class="exercise-card">
-        <div class="exercise-title">Сделано: ${workoutLabel(done.type)}</div>
-        ${done.records.map(r => `
-          <div class="exercise-info">
-            <b>${r.name}</b> ${r.success ? "✅" : "❌"}<br>
-            ${r.done.map(s => `${s[0]} кг × ${s[1]}`).join("<br>")}
-          </div>
-        `).join("<hr>")}
+  <div class="exercise-card">
+    <div class="exercise-title">План: ${workoutLabel(type)}</div>
+
+    ${data.plans[type].map(ex => `
+      <div class="exercise-info">
+        <b>${ex.name}</b><br>
+        ${ex.sets.map(s => `${s[0]} кг × ${s[1]}`).join("<br>")}
       </div>
-    `;
+      <hr>
+    `).join("")}
+
+    <button class="start-btn" onclick="completeWorkoutFromCalendar('${type}', '${dateKey(date)}')">
+      Записать как выполненную
+    </button>
+  </div>
+`;
   } else if (type) {
     box.innerHTML = `
       <div class="exercise-card">
@@ -518,5 +524,51 @@ function parseSets(text) {
   }
 
   return sets.length ? sets : null;
+}
+function completeWorkoutFromCalendar(type, selectedDateKey) {
+  const alreadyDone = data.history.find(h => h.dateKey === selectedDateKey);
+
+  if (alreadyDone) {
+    alert("На эту дату тренировка уже записана.");
+    return;
+  }
+
+  const records = data.plans[type].map(ex => ({
+    name: ex.name,
+    planned: ex.sets,
+    done: ex.sets,
+    success: true
+  }));
+
+  records.forEach(record => {
+    const ex = data.plans[type].find(e => e.name === record.name);
+
+    ex.success++;
+
+    if (ex.success >= 2) {
+      const allTop = ex.sets.every(s => s[1] >= ex.max);
+
+      ex.sets = ex.sets.map(s => {
+        if (allTop) return [s[0] + ex.step, ex.min];
+        if (s[1] < ex.max) return [s[0], s[1] + 1];
+        return s;
+      });
+
+      ex.success = 0;
+    }
+  });
+
+  data.history.push({
+    date: selectedDateKey,
+    dateKey: selectedDateKey,
+    type,
+    records
+  });
+
+  saveData();
+  renderAll();
+
+  alert("Тренировка записана.");
+  showScreen("calendarScreen");
 }
 renderAll();
