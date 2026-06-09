@@ -319,3 +319,22 @@ select {
 .nav-btn.active {
   color: #0a84ff;
 }
+
+@media (min-width: 900px) {
+  .app {
+    max-width: 430px;
+    margin: 0 auto;
+    min-height: 100vh;
+    border-left: 1px solid #1c1c1e;
+    border-right: 1px solid #1c1c1e;
+  }
+
+  .tabbar {
+    max-width: 430px;
+    margin: 0 auto;
+  }
+
+  body {
+    background: #050505;
+  }
+}
