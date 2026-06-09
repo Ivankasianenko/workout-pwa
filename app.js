@@ -76,9 +76,11 @@ function renderPlan(type = data.selectedWorkout) {
   const list = document.getElementById("planList");
   list.innerHTML = "";
 
-  data.plans[type].forEach(ex => {
+  data.plans[type].forEach((ex, index) => {
     const div = document.createElement("div");
     div.className = "exercise-card";
+
+    div.onclick = () => editExercise(type, index);
 
     div.innerHTML = `
       <div class="exercise-title">${ex.name}</div>
@@ -402,5 +404,119 @@ document.querySelectorAll(".plan-tab").forEach(btn => {
     renderPlan(btn.dataset.type);
   };
 });
+function editExercise(type, index) {
+  const ex = data.plans[type][index];
 
+  const action = prompt(
+    `Редактировать упражнение:\n\n${ex.name}\n\n` +
+    `1 - Название\n` +
+    `2 - Объем и шаг\n` +
+    `3 - Подходы\n` +
+    `4 - Удалить`
+  );
+
+  if (action === "1") {
+    const newName = prompt("Новое название:", ex.name);
+
+    if (newName && newName.trim()) {
+      ex.name = newName.trim();
+    }
+  }
+
+  if (action === "2") {
+    const value = prompt(
+      "Введи объем и шаг веса:\n\nПример: 8-12; 5",
+      `${ex.min}-${ex.max}; ${ex.step}`
+    );
+
+    if (value) {
+      const parsed = parseVolume(value);
+
+      if (parsed) {
+        ex.min = parsed.min;
+        ex.max = parsed.max;
+        ex.step = parsed.step;
+        ex.success = 0;
+      } else {
+        alert("Неверный формат. Пример: 8-12; 5");
+      }
+    }
+  }
+
+  if (action === "3") {
+    const value = prompt(
+      "Введи подходы:\n\nПример: 95x7, 95x7, 90x10",
+      ex.sets.map(s => `${s[0]}x${s[1]}`).join(", ")
+    );
+
+    if (value) {
+      const parsed = parseSets(value);
+
+      if (parsed) {
+        ex.sets = parsed;
+        ex.success = 0;
+      } else {
+        alert("Неверный формат. Пример: 95x7, 95x7, 90x10");
+      }
+    }
+  }
+
+  if (action === "4") {
+    const ok = confirm(`Удалить упражнение "${ex.name}"?`);
+
+    if (ok) {
+      data.plans[type].splice(index, 1);
+    }
+  }
+
+  saveData();
+  renderPlan(type);
+}
+
+function parseVolume(text) {
+  const clean = text.replaceAll(" ", "").replace(",", ".");
+
+  if (!clean.includes(";") || !clean.includes("-")) {
+    return null;
+  }
+
+  const [range, stepRaw] = clean.split(";");
+  const [minRaw, maxRaw] = range.split("-");
+
+  const min = Number(minRaw);
+  const max = Number(maxRaw);
+  const step = Number(stepRaw);
+
+  if (!min || !max || !step || min > max) {
+    return null;
+  }
+
+  return { min, max, step };
+}
+
+function parseSets(text) {
+  const parts = text
+    .replaceAll("×", "x")
+    .replaceAll("х", "x")
+    .split(",")
+    .map(x => x.trim())
+    .filter(Boolean);
+
+  const sets = [];
+
+  for (const part of parts) {
+    const [w, r] = part.split("x").map(x => x.trim());
+
+    const weight = Number(w.replace(",", "."));
+    const reps = Number(r);
+
+    if (!weight || !reps) {
+      return null;
+    }
+
+    sets.push([weight, reps]);
+  }
+
+  return sets.length ? sets : null;
+}
 renderAll();
