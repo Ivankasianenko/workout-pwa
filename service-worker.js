@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "workout-pwa-v3";
+const CACHE_NAME = "workout-pwa-v"12;
 
 const FILES_TO_CACHE = [
   "./",
