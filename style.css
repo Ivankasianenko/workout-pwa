@@ -54,6 +54,7 @@ html, body {
   height: 430px;
   max-width: 90vw;
   object-fit: contain;
+  mix-blend-mode: screen;
 }
 
 .start-block {
